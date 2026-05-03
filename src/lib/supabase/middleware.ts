@@ -7,9 +7,18 @@ const PUBLIC_ROUTES = ["/login", "/signup", "/auth/callback", "/auth/error"];
 export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({ request });
 
+  const rawUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!.trim();
+  let normalizedUrl = rawUrl.replace(/\/+$/, "");
+  try {
+    const u = new URL(rawUrl);
+    normalizedUrl = `${u.protocol}//${u.host}`;
+  } catch {
+    // mantém o trim simples acima
+  }
+
   const supabase = createServerClient<Database>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    normalizedUrl,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!.trim(),
     {
       cookies: {
         getAll() {

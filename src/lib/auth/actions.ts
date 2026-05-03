@@ -71,8 +71,17 @@ export async function signUp(_prev: AuthState, formData: FormData): Promise<Auth
   // Cria o usuário via REST direto — algumas combinações de @supabase/ssr +
   // chaves publishable retornam 404 em supabase.auth.signUp, mesmo com o
   // endpoint funcionando. Chamada raw via fetch é estável.
-  const baseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!.replace(/\/+$/, "");
-  const apiKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+  // Normaliza a URL: extrai só `https://host` mesmo que venha com path
+  // (`/rest/v1` etc.) por engano nas env vars do deploy.
+  const rawUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!.trim();
+  let baseUrl: string;
+  try {
+    const u = new URL(rawUrl);
+    baseUrl = `${u.protocol}//${u.host}`;
+  } catch {
+    baseUrl = rawUrl.replace(/\/+$/, "");
+  }
+  const apiKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!.trim();
 
   let resp: Response;
   try {
@@ -109,12 +118,9 @@ export async function signUp(_prev: AuthState, formData: FormData): Promise<Auth
     }
     const apiMsg =
       parsed?.msg || parsed?.error_description || parsed?.message || body || "sem detalhes";
-    // Mostra a URL usada (sem chave) e o tamanho da chave pra debugar config Vercel.
-    const urlInfo = `URL=${baseUrl}`;
-    const keyInfo = `KEY=${apiKey.slice(0, 16)}…(${apiKey.length} chars)`;
     return {
       ok: false,
-      error: `${pickErrorMessage(apiMsg)} (status ${resp.status}) · ${urlInfo} · ${keyInfo}`,
+      error: pickErrorMessage(apiMsg),
     };
   }
 
