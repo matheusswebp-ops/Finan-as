@@ -68,38 +68,68 @@ export async function signUp(_prev: AuthState, formData: FormData): Promise<Auth
     return { ok: false, error: "A senha precisa ter pelo menos 6 caracteres." };
   }
 
-  const supabase = await createClient();
+  // Cria o usuário via REST direto — algumas combinações de @supabase/ssr +
+  // chaves publishable retornam 404 em supabase.auth.signUp, mesmo com o
+  // endpoint funcionando. Chamada raw via fetch é estável.
+  const baseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!.replace(/\/+$/, "");
+  const apiKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
-  let signUpResult;
+  let resp: Response;
   try {
-    signUpResult = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: { display_name: displayName },
+    resp = await fetch(`${baseUrl}/auth/v1/signup`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        apikey: apiKey,
+        Authorization: `Bearer ${apiKey}`,
       },
+      body: JSON.stringify({
+        email,
+        password,
+        data: { display_name: displayName },
+      }),
     });
   } catch (e) {
-    const cause = e instanceof Error ? `${e.message}` : String(e);
-    console.error("[signUp] thrown:", cause);
-    return { ok: false, error: `Erro inesperado: ${cause}` };
+    const cause = e instanceof Error ? e.message : String(e);
+    return { ok: false, error: `Erro de rede ao cadastrar: ${cause}` };
   }
 
-  if (signUpResult.error) {
-    console.error("[signUp] api error:", signUpResult.error);
-    const code = signUpResult.error.status ? ` (status ${signUpResult.error.status})` : "";
+  if (!resp.ok) {
+    let body = "";
+    try {
+      body = await resp.text();
+    } catch {
+      // ignore
+    }
+    let parsed: { msg?: string; error_description?: string; message?: string } | null = null;
+    try {
+      parsed = body ? JSON.parse(body) : null;
+    } catch {
+      // ignore
+    }
+    const apiMsg =
+      parsed?.msg || parsed?.error_description || parsed?.message || body || "sem detalhes";
     return {
       ok: false,
-      error: `${pickErrorMessage(signUpResult.error.message)}${code}`,
+      error: `${pickErrorMessage(apiMsg)} (status ${resp.status})`,
     };
   }
 
-  const { data } = await supabase.auth.getSession();
-  if (!data.session) {
+  // Já criou o usuário. Agora loga via SSR client pra setar os cookies de
+  // sessão e redirecionar pra área autenticada.
+  const supabase = await createClient();
+  const { error: signInErr } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  });
+
+  if (signInErr) {
+    // Cadastro deu certo mas precisamos do confirm de email — o login não
+    // gera sessão sem confirmar. Avisa o usuário.
     return {
       ok: true,
       error:
-        "Cadastro recebido. Confirme o e-mail enviado para fazer login (se a confirmação estiver ativada).",
+        "Cadastro recebido. Verifique o e-mail enviado para confirmar e fazer login.",
     };
   }
 
