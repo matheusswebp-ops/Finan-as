@@ -69,15 +69,30 @@ export async function signUp(_prev: AuthState, formData: FormData): Promise<Auth
   }
 
   const supabase = await createClient();
-  const { error } = await supabase.auth.signUp({
-    email,
-    password,
-    options: {
-      data: { display_name: displayName },
-    },
-  });
 
-  if (error) return { ok: false, error: pickErrorMessage(error.message) };
+  let signUpResult;
+  try {
+    signUpResult = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: { display_name: displayName },
+      },
+    });
+  } catch (e) {
+    const cause = e instanceof Error ? `${e.message}` : String(e);
+    console.error("[signUp] thrown:", cause);
+    return { ok: false, error: `Erro inesperado: ${cause}` };
+  }
+
+  if (signUpResult.error) {
+    console.error("[signUp] api error:", signUpResult.error);
+    const code = signUpResult.error.status ? ` (status ${signUpResult.error.status})` : "";
+    return {
+      ok: false,
+      error: `${pickErrorMessage(signUpResult.error.message)}${code}`,
+    };
+  }
 
   const { data } = await supabase.auth.getSession();
   if (!data.session) {
