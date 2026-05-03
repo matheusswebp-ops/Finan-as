@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { LoginForm } from "./login-form";
 
 export const metadata: Metadata = { title: "Entrar" };
@@ -41,7 +42,7 @@ export default function LoginPage() {
           Acesse a sua conta
         </p>
         <h2 className="font-display text-3xl sm:text-4xl font-medium tracking-tight text-fg">
-          Bem-vindos.
+          Bem-vindo.
         </h2>
         <p className="text-fg-muted text-[15px] leading-relaxed">
           Entre para acompanhar entradas, despesas e metas em um só lugar.
@@ -49,6 +50,16 @@ export default function LoginPage() {
       </div>
 
       <LoginForm />
+
+      <p className="text-sm text-fg-muted mt-6">
+        Ainda não tem conta?{" "}
+        <Link
+          href="/signup"
+          className="text-fg font-medium underline decoration-primary/60 decoration-2 underline-offset-4 hover:text-primary transition-colors"
+        >
+          Criar conta
+        </Link>
+      </p>
     </div>
   );
 }

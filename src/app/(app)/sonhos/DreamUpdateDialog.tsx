@@ -83,7 +83,7 @@ export function DreamUpdateDialog({
           <DialogHeader>
             <DialogTitle>Atualizar progresso</DialogTitle>
             <DialogDescription>
-              Quanto vocês têm guardado para {dreamTitle} hoje?
+              Quanto você tem guardado para {dreamTitle} hoje?
             </DialogDescription>
           </DialogHeader>
 

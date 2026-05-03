@@ -163,7 +163,7 @@ export const getNotifications = cache(async (): Promise<Notification[]> => {
         id: "month-end-positive",
         kind: "month-end",
         title: "Lucro do mês fechado",
-        description: "Vocês terminaram o mês no positivo. Registre nos Lucros.",
+        description: "Você terminou o mês no positivo. Registre nos Lucros.",
         href: "/lucros",
         iconTone: "success",
         occurredAt: todayIso,

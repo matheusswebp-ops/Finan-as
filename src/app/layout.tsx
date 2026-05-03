@@ -25,15 +25,15 @@ const jetbrains = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "FinanceFlow · Controle financeiro do casal",
+    default: "FinanceFlow · Controle financeiro pessoal",
     template: "%s · FinanceFlow",
   },
   description:
-    "Plataforma de controle financeiro para casal e família. Acompanhe entradas, saídas, metas e o saldo do mês com clareza.",
+    "Acompanhe entradas, saídas, metas e o saldo do mês com clareza, em um só lugar.",
   applicationName: "FinanceFlow",
   authors: [{ name: "FinanceFlow" }],
   creator: "FinanceFlow",
-  keywords: ["finanças", "controle financeiro", "orçamento", "metas", "casal"],
+  keywords: ["finanças", "controle financeiro", "orçamento", "metas"],
 };
 
 export const viewport: Viewport = {

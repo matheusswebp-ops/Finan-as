@@ -66,7 +66,7 @@ export default async function LucrosPage({
       <PageHeader
         eyebrow="Banco de lucros"
         title="Lucros"
-        description="Acompanhe o lucro líquido mês a mês e a evolução do casal."
+        description="Acompanhe o lucro líquido mês a mês e a sua evolução."
         actions={
           <div className="flex flex-wrap items-center gap-2">
             <GenerateAutoButton monthIso={currentMonthIso} />

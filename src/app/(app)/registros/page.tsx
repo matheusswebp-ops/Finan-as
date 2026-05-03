@@ -40,7 +40,7 @@ export default async function RegistrosPage({
       <PageHeader
         eyebrow="Extrato"
         title="Registros"
-        description="Toda a movimentação do casal em um lugar: entradas, saídas e parcelamentos."
+        description="Toda a sua movimentação em um lugar: entradas, saídas e parcelamentos."
         actions={
           <div className="flex flex-wrap items-center gap-2">
             <MonthSelector />

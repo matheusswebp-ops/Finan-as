@@ -27,7 +27,7 @@ export default async function SonhosPage() {
             <Sparkles className="h-6 w-6" />
           </div>
           <p className="text-sm text-fg-muted max-w-sm mx-auto">
-            Que tal cadastrar a viagem dos sonhos, a entrada do apê ou o curso que vocês querem fazer? Comece pelo botão acima.
+            Que tal cadastrar a viagem dos sonhos, a entrada do apê ou o curso que você quer fazer? Comece pelo botão acima.
           </p>
         </Card>
       ) : (

@@ -31,7 +31,7 @@ export default async function ConfiguracoesPage() {
       <PageHeader
         eyebrow="Minha conta"
         title="Configurações"
-        description="Gerencie seu perfil e o espaço compartilhado do casal."
+        description="Gerencie seu perfil e o seu espaço de finanças."
       />
 
       <div className="grid lg:grid-cols-[1.2fr_1fr] gap-4 lg:gap-5 mb-5">
@@ -92,7 +92,7 @@ export default async function ConfiguracoesPage() {
             </span>
             <div>
               <h3 className="font-display text-lg font-semibold">
-                Convite do casal
+                Convite
               </h3>
               <p className="text-sm text-fg-muted">
                 Cada espaço de finanças tem um código único.
@@ -106,20 +106,20 @@ export default async function ConfiguracoesPage() {
             <p className="text-sm font-medium text-fg">Como funciona?</p>
             <ol className="text-xs text-fg-muted leading-relaxed list-decimal pl-4 space-y-1.5">
               <li>
-                Compartilhe o código acima com seu parceiro ou parceira.
+                Compartilhe o código acima com a pessoa que você quer convidar
+                para o seu espaço.
               </li>
               <li>
-                A pessoa convidada cria a conta dela e informa o código no
-                primeiro acesso.
+                Ela cria a conta dela e informa o código no primeiro acesso.
               </li>
               <li>
-                A partir daí, vocês veem os mesmos lançamentos, metas e sonhos
+                A partir daí, ambos veem os mesmos lançamentos, metas e sonhos
                 automaticamente.
               </li>
             </ol>
             <p className="text-[11px] text-fg-muted leading-relaxed pt-2 border-t border-border">
-              Funcionalidade ainda em desenvolvimento. Por enquanto, vocês
-              compartilham o mesmo login.
+              Funcionalidade ainda em desenvolvimento. Por enquanto, cada conta
+              tem o próprio espaço.
             </p>
           </div>
         </Card>

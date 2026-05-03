@@ -33,14 +33,14 @@ export function LoginForm() {
   return (
     <form action={formAction} className="space-y-5">
       <div className="space-y-2">
-        <Label htmlFor="name">Nome do casal</Label>
+        <Label htmlFor="name">Seu nome</Label>
         <Input
           id="name"
           name="name"
           type="text"
           autoComplete="username"
           required
-          placeholder="Como vocês se chamam"
+          placeholder="Como você se chama"
           startIcon={<User className="h-4 w-4" />}
         />
       </div>

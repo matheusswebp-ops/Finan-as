@@ -88,7 +88,7 @@ export function DreamFormDialog({
           <DialogHeader>
             <DialogTitle>{initial ? "Editar sonho" : "Novo sonho"}</DialogTitle>
             <DialogDescription>
-              Conte para onde vocês querem chegar e em quanto tempo.
+              Conte para onde você quer chegar e em quanto tempo.
             </DialogDescription>
           </DialogHeader>
 
