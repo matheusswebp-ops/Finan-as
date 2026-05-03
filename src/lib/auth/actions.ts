@@ -109,9 +109,12 @@ export async function signUp(_prev: AuthState, formData: FormData): Promise<Auth
     }
     const apiMsg =
       parsed?.msg || parsed?.error_description || parsed?.message || body || "sem detalhes";
+    // Mostra a URL usada (sem chave) e o tamanho da chave pra debugar config Vercel.
+    const urlInfo = `URL=${baseUrl}`;
+    const keyInfo = `KEY=${apiKey.slice(0, 16)}…(${apiKey.length} chars)`;
     return {
       ok: false,
-      error: `${pickErrorMessage(apiMsg)} (status ${resp.status})`,
+      error: `${pickErrorMessage(apiMsg)} (status ${resp.status}) · ${urlInfo} · ${keyInfo}`,
     };
   }
 
