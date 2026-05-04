@@ -68,7 +68,7 @@ export function ProfitRangePopover({
           <CalendarRange className="h-4 w-4" />
         </button>
       </PopoverTrigger>
-      <PopoverContent align="end" className="!w-[280px] space-y-3">
+      <PopoverContent align="end" className="!w-[calc(100vw-1.5rem)] sm:!w-[280px] space-y-3">
         <div>
           <p className="font-display text-sm font-semibold">Período personalizado</p>
           <p className="text-xs text-fg-muted">Escolha de tal mês até tal mês.</p>

@@ -23,7 +23,7 @@ export function QuickKindFilter() {
       <button
         onClick={() => set("income")}
         className={cn(
-          "inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 text-sm font-medium transition-all",
+          "inline-flex items-center gap-1.5 sm:gap-2 rounded-full px-2.5 sm:px-3.5 py-1.5 text-xs sm:text-sm font-medium transition-all",
           active === "income"
             ? "bg-success text-fg shadow-[0_4px_16px_-4px_hsl(var(--success)/0.5)]"
             : "bg-success-soft text-success border border-success/30 hover:brightness-110"
@@ -35,7 +35,7 @@ export function QuickKindFilter() {
       <button
         onClick={() => set("expense")}
         className={cn(
-          "inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 text-sm font-medium transition-all",
+          "inline-flex items-center gap-1.5 sm:gap-2 rounded-full px-2.5 sm:px-3.5 py-1.5 text-xs sm:text-sm font-medium transition-all",
           active === "expense"
             ? "bg-danger text-fg shadow-[0_4px_16px_-4px_hsl(var(--danger)/0.5)]"
             : "bg-danger-soft text-danger border border-danger/30 hover:brightness-110"

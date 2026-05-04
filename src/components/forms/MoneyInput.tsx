@@ -41,7 +41,7 @@ export const MoneyInput = React.forwardRef<HTMLInputElement, MoneyInputProps>(
             variant === "default" &&
               "h-11 w-full rounded-xl bg-surface-2 border border-border pl-10 pr-4 text-sm tabular-nums focus:border-primary/50 focus:bg-surface focus:outline-none transition-colors",
             variant === "hero" &&
-              "w-full bg-transparent border-0 pl-10 pr-0 font-display text-5xl sm:text-6xl font-medium tracking-tight tabular-nums focus:outline-none placeholder:text-fg-muted",
+              "w-full bg-transparent border-0 pl-10 pr-0 font-display text-4xl sm:text-5xl lg:text-6xl font-medium tracking-tight tabular-nums focus:outline-none placeholder:text-fg-muted",
             className
           )}
           placeholder={variant === "hero" ? "0,00" : "0,00"}

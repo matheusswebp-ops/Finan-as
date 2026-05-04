@@ -79,28 +79,28 @@ export function CategoryBreakdownPanel({
       </Card>
 
       <Card className="space-y-3">
-        <div className="grid grid-cols-3 gap-3 mb-2 text-center">
-          <div className="rounded-xl bg-surface-2 border border-border px-3 py-2.5">
+        <div className="grid grid-cols-3 gap-2 sm:gap-3 mb-2 text-center">
+          <div className="rounded-xl bg-surface-2 border border-border px-2 sm:px-3 py-2.5">
             <p className="text-[10px] uppercase tracking-wider text-fg-muted font-semibold">
               {paidLabel}
             </p>
-            <p className="font-display text-lg font-semibold tabular-nums mt-0.5">
+            <p className="font-display text-sm sm:text-lg font-semibold tabular-nums mt-0.5 truncate">
               {formatBRL(totalPaid)}
             </p>
           </div>
-          <div className="rounded-xl bg-warning-soft border border-warning/30 px-3 py-2.5">
+          <div className="rounded-xl bg-warning-soft border border-warning/30 px-2 sm:px-3 py-2.5">
             <p className="text-[10px] uppercase tracking-wider text-warning font-semibold">
               {forecastLabel}
             </p>
-            <p className="font-display text-lg font-semibold tabular-nums mt-0.5 text-warning">
+            <p className="font-display text-sm sm:text-lg font-semibold tabular-nums mt-0.5 text-warning truncate">
               {formatBRL(totalForecast)}
             </p>
           </div>
-          <div className="rounded-xl bg-surface-2 border border-border-strong px-3 py-2.5">
+          <div className="rounded-xl bg-surface-2 border border-border-strong px-2 sm:px-3 py-2.5">
             <p className="text-[10px] uppercase tracking-wider text-fg-muted font-semibold">
               Total
             </p>
-            <p className="font-display text-lg font-semibold tabular-nums mt-0.5">
+            <p className="font-display text-sm sm:text-lg font-semibold tabular-nums mt-0.5 truncate">
               {formatBRL(totalAll)}
             </p>
           </div>

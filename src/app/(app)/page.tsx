@@ -145,7 +145,7 @@ export default async function DashboardPage({
                 <CheckCircle2 className="h-3 w-3 text-success" />
                 Realizado
               </p>
-              <p className="font-display text-2xl font-medium tabular-nums mt-1">
+              <p className="font-display text-xl sm:text-2xl font-medium tabular-nums mt-1 truncate">
                 {formatBRL(summary.income.realized)}
               </p>
             </div>
@@ -154,7 +154,7 @@ export default async function DashboardPage({
                 <Clock className="h-3 w-3 text-warning" />
                 Previsão a receber
               </p>
-              <p className="font-display text-2xl font-medium tabular-nums text-fg-muted mt-1">
+              <p className="font-display text-xl sm:text-2xl font-medium tabular-nums text-fg-muted mt-1 truncate">
                 {formatBRL(summary.income.forecast)}
               </p>
             </div>
@@ -174,7 +174,7 @@ export default async function DashboardPage({
                 <CheckCircle2 className="h-3 w-3 text-success" />
                 Realizado
               </p>
-              <p className="font-display text-2xl font-medium tabular-nums mt-1">
+              <p className="font-display text-xl sm:text-2xl font-medium tabular-nums mt-1 truncate">
                 {formatBRL(summary.expense.realized)}
               </p>
             </div>
@@ -183,7 +183,7 @@ export default async function DashboardPage({
                 <Clock className="h-3 w-3 text-warning" />
                 Previsão a pagar
               </p>
-              <p className="font-display text-2xl font-medium tabular-nums text-fg-muted mt-1">
+              <p className="font-display text-xl sm:text-2xl font-medium tabular-nums text-fg-muted mt-1 truncate">
                 {formatBRL(summary.expense.forecast)}
               </p>
             </div>
@@ -199,13 +199,13 @@ export default async function DashboardPage({
           (summary.expense.realized + summary.expense.forecast);
         const ProjIcon = projectedBalance < 0 ? TrendingDown : TrendingUp;
         return (
-          <Card hero className="p-6 sm:p-8 overflow-hidden space-y-6">
+          <Card hero className="p-5 sm:p-8 overflow-hidden space-y-5 sm:space-y-6">
             <div className="flex flex-wrap items-end justify-between gap-4">
-              <div className="space-y-2">
+              <div className="space-y-2 min-w-0">
                 <p className="text-[10px] sm:text-[11px] uppercase tracking-[0.22em] text-fg-muted font-semibold">
                   Saldo realizado
                 </p>
-                <h2 className="font-display text-5xl sm:text-6xl font-medium tracking-[-0.02em] tabular-nums leading-none">
+                <h2 className="font-display text-[2.25rem] sm:text-5xl lg:text-6xl font-medium tracking-[-0.02em] tabular-nums leading-none break-words">
                   {formatBRL(summary.balance)}
                 </h2>
                 <p className="text-sm text-fg-muted">

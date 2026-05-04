@@ -82,7 +82,7 @@ export default async function LucrosPage({
             <ProfitRangePopover fromIso={fromIso} toIso={toIso} />
           </div>
           <p
-            className={`font-display text-xl sm:text-2xl font-medium tabular-nums ${
+            className={`font-display text-lg sm:text-2xl font-medium tabular-nums truncate ${
               totalNet < 0 ? "text-danger" : ""
             }`}
           >

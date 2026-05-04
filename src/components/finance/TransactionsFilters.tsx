@@ -80,7 +80,7 @@ export function TransactionsFilters({
 
   return (
     <div className="flex flex-wrap items-center gap-2">
-      <div className="flex-1 min-w-[200px]">
+      <div className="flex-1 min-w-full sm:min-w-[200px]">
         <Input
           placeholder="Buscar descrição…"
           startIcon={<Search className="h-4 w-4" />}
@@ -102,7 +102,7 @@ export function TransactionsFilters({
 
       {showKind && (
         <Select value={kind} onValueChange={(v) => updateParam("kind", v)}>
-          <SelectTrigger className="w-[140px]">
+          <SelectTrigger className="w-full sm:w-[140px]">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -117,7 +117,7 @@ export function TransactionsFilters({
         value={categoryId}
         onValueChange={(v) => updateParam("category", v)}
       >
-        <SelectTrigger className="w-[180px]">
+        <SelectTrigger className="w-full sm:w-[180px]">
           <SelectValue placeholder="Categoria" />
         </SelectTrigger>
         <SelectContent>
