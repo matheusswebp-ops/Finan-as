@@ -21,7 +21,7 @@ export function MonthlyBars({ data }: { data: MonthlyHistoryPoint[] }) {
   }));
 
   return (
-    <div className="h-[220px] sm:h-[260px] w-full">
+    <div className="h-[220px] sm:h-[260px] w-full min-w-0 overflow-hidden">
       <ResponsiveContainer>
         <BarChart
           data={chartData}

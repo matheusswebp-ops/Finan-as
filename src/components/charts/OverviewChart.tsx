@@ -24,7 +24,7 @@ export function OverviewChart({ data }: { data: MonthlyHistoryPoint[] }) {
   }));
 
   return (
-    <div className="h-[300px] sm:h-[340px] w-full">
+    <div className="h-[300px] sm:h-[340px] w-full min-w-0 overflow-hidden">
       <ResponsiveContainer>
         <ComposedChart
           data={chartData}

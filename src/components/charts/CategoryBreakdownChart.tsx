@@ -47,7 +47,7 @@ export function CategoryBreakdownChart({
     .map((d) => ({ name: d.name, value: d.forecast / 100, color: d.color }));
 
   return (
-    <div className="relative w-full">
+    <div className="relative w-full min-w-0 overflow-hidden">
       <div className="relative h-[260px]">
         <ResponsiveContainer>
           <PieChart>

@@ -19,7 +19,7 @@ export async function Topbar() {
   const firstName = member.displayName.split(" ")[0] ?? member.displayName;
 
   return (
-    <header className="sticky top-0 z-30 -mx-4 sm:-mx-6 lg:mx-0 px-4 sm:px-6 lg:px-0 pt-4 lg:pt-6 pb-3 lg:pb-4 bg-bg/85 backdrop-blur-xl backdrop-saturate-150 border-b border-border lg:border-b-0">
+    <header className="sticky top-0 z-30 px-4 sm:px-6 lg:px-0 pt-4 lg:pt-6 pb-3 lg:pb-4 bg-bg/85 backdrop-blur-xl backdrop-saturate-150 border-b border-border lg:border-b-0">
       <div className="flex items-center gap-2 sm:gap-3">
         <div className="flex-1 min-w-0">
           <p className="text-[10px] sm:text-[11px] uppercase tracking-[0.18em] text-fg-muted font-medium truncate">

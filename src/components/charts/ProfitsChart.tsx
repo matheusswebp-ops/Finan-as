@@ -26,7 +26,7 @@ export function ProfitsChart({ data }: { data: ProfitPoint[] }) {
   }));
 
   return (
-    <div className="h-[260px] w-full">
+    <div className="h-[260px] w-full min-w-0 overflow-hidden">
       <ResponsiveContainer>
         <BarChart
           data={chartData}
