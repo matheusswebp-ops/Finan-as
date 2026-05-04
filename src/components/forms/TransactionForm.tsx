@@ -6,7 +6,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   ArrowDownRight,
   ArrowUpRight,
-  CalendarDays,
   CheckCircle2,
   Clock,
   Infinity as InfinityIcon,
@@ -162,7 +161,6 @@ export function TransactionForm({
               variant="hero"
               value={field.value || 0}
               onChange={field.onChange}
-              autoFocus
               id="amount"
             />
           )}
@@ -264,7 +262,6 @@ export function TransactionForm({
           <Input
             id="occurred_on"
             type="date"
-            startIcon={<CalendarDays className="h-4 w-4" />}
             {...register("occurred_on")}
           />
         </div>

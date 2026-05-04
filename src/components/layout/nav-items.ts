@@ -25,10 +25,17 @@ export const NAV_ITEMS: NavItem[] = [
   { href: "/sonhos", label: "Sonhos", icon: Sparkles, shortLabel: "Sonhos" },
 ];
 
-// 4 itens visíveis na bottom nav. O botão central de + abre o quick add.
+// 3 itens na bottom nav (+ slot central do + e slot do "Mais").
 export const MOBILE_NAV_ITEMS: NavItem[] = [
   NAV_ITEMS[0]!, // Visão Geral
   NAV_ITEMS[1]!, // Despesas
   NAV_ITEMS[2]!, // Entradas
+];
+
+// Itens acessíveis via drawer "Mais" na bottom nav.
+export const MOBILE_MORE_ITEMS: NavItem[] = [
   NAV_ITEMS[4]!, // Metas
+  NAV_ITEMS[3]!, // Registro
+  NAV_ITEMS[5]!, // Lucros
+  NAV_ITEMS[6]!, // Sonhos
 ];

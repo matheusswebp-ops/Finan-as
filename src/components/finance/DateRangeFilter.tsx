@@ -1,6 +1,5 @@
 "use client";
 
-import { CalendarDays } from "lucide-react";
 import { useEffect, useState, useTransition } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { format, startOfMonth, endOfMonth } from "date-fns";
@@ -62,8 +61,7 @@ export function DateRangeFilter() {
             setFrom(e.target.value);
             apply(e.target.value, to);
           }}
-          startIcon={<CalendarDays className="h-4 w-4" />}
-          className="w-[170px]"
+          className="w-full sm:w-[160px]"
         />
       </div>
       <div className="space-y-1.5">
@@ -76,8 +74,7 @@ export function DateRangeFilter() {
             setTo(e.target.value);
             apply(from, e.target.value);
           }}
-          startIcon={<CalendarDays className="h-4 w-4" />}
-          className="w-[170px]"
+          className="w-full sm:w-[160px]"
         />
       </div>
       <Button variant="ghost" size="sm" onClick={reset}>
