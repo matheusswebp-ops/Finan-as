@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { format, parseISO, startOfMonth, subMonths } from "date-fns";
+import { brazilToday } from "@/lib/tz";
 import { ptBR } from "date-fns/locale";
 import { Card } from "@/components/ui/card";
 import { PageHeader } from "@/components/finance/PageHeader";
@@ -40,6 +41,10 @@ export default async function MetasPage({
   const expenseGoal = goals.find(
     (g) => g.goal.goal_kind === "expense" && g.goal.category_id === null
   );
+  const profitGoal = goals.find(
+    (g) => g.goal.goal_kind === "profit" && g.goal.category_id === null
+  );
+  const netBalance = summary.income.realized - summary.expense.realized;
   const goalByCat = new Map(
     goals
       .filter((g) => g.goal.goal_kind === "expense" && g.goal.category_id)
@@ -47,7 +52,7 @@ export default async function MetasPage({
   );
 
   // Build Saturday update messages (only on Saturday)
-  const today = new Date();
+  const today = parseISO(brazilToday());
   const isSaturday = today.getDay() === 6;
   const messages: SaturdayMessage[] = [];
   if (isSaturday) {
@@ -122,12 +127,12 @@ export default async function MetasPage({
         </div>
       )}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:gap-5 mb-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-5 mb-5">
         <GoalCard
           monthIso={monthIso}
           goalKind="income"
           categoryId={null}
-          categoryName="Meta de receita"
+          categoryName="Meta de faturamento"
           categoryColor="cat-4"
           goalId={incomeGoal?.goal.id}
           limitCents={incomeGoal?.goal.limit_cents}
@@ -155,6 +160,22 @@ export default async function MetasPage({
           }
           level={expenseGoal?.level}
           global
+        />
+        <GoalCard
+          monthIso={monthIso}
+          goalKind="profit"
+          categoryId={null}
+          categoryName="Meta de lucro"
+          categoryColor="cat-1"
+          goalId={profitGoal?.goal.id}
+          limitCents={profitGoal?.goal.limit_cents}
+          usedCents={netBalance}
+          pct={
+            profitGoal
+              ? Math.max(0, netBalance) / profitGoal.goal.limit_cents
+              : undefined
+          }
+          level={profitGoal?.level}
         />
       </div>
 

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { format, startOfMonth, endOfMonth } from "date-fns";
+import { format, parseISO, startOfMonth, endOfMonth } from "date-fns";
 import { Card } from "@/components/ui/card";
 import { PageHeader } from "@/components/finance/PageHeader";
 import { MonthRangeNav } from "@/components/finance/MonthRangeNav";
@@ -10,6 +10,7 @@ import { CategoryBreakdownPanel } from "./CategoryBreakdownPanel";
 import { listTransactions, totalsForList } from "@/lib/queries/transactions";
 import { getCategories } from "@/lib/queries/categories";
 import { getCategoryBreakdown, getCategoryBreakdownForecast } from "@/lib/queries/balance";
+import { brazilToday } from "@/lib/tz";
 import { formatBRL } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
@@ -26,7 +27,7 @@ export default async function DespesasPage({
   const sp = await searchParams;
   const tab: Tab = (sp.tab as Tab) ?? "paid";
 
-  const today = new Date();
+  const today = parseISO(brazilToday());
   const from = sp.from ?? format(startOfMonth(today), "yyyy-MM-dd");
   const to = sp.to ?? format(endOfMonth(today), "yyyy-MM-dd");
 
@@ -39,6 +40,9 @@ export default async function DespesasPage({
       getCategoryBreakdown("expense", from, to),
       getCategoryBreakdownForecast("expense", from, to),
     ]);
+
+  const totalPago = totalsForList(paid).expense;
+  const totalAPagar = totalsForList(due).expense;
 
   const totals =
     tab === "paid"
@@ -57,6 +61,34 @@ export default async function DespesasPage({
         description="Acompanhe o que já foi pago, o que ainda está por vencer e a distribuição por categoria."
         actions={<CopyPreviousMonthButton kind="expense" referenceIso={from} />}
       />
+
+      {/* Cards de resumo */}
+      <div className="grid grid-cols-3 gap-3 mb-5">
+        <Card className="!p-4 space-y-1">
+          <p className="text-[10px] uppercase tracking-wider text-fg-muted font-semibold truncate">
+            Pago
+          </p>
+          <p className="font-display text-lg sm:text-2xl font-semibold tabular-nums truncate">
+            {formatBRL(totalPago)}
+          </p>
+        </Card>
+        <Card className="!p-4 space-y-1">
+          <p className="text-[10px] uppercase tracking-wider text-fg-muted font-semibold truncate">
+            A pagar
+          </p>
+          <p className="font-display text-lg sm:text-2xl font-semibold tabular-nums text-warning truncate">
+            {formatBRL(totalAPagar)}
+          </p>
+        </Card>
+        <Card className="!p-4 space-y-1">
+          <p className="text-[10px] uppercase tracking-wider text-fg-muted font-semibold truncate">
+            Total
+          </p>
+          <p className="font-display text-lg sm:text-2xl font-semibold tabular-nums text-danger truncate">
+            {formatBRL(totalPago + totalAPagar)}
+          </p>
+        </Card>
+      </div>
 
       <div className="flex flex-wrap items-center gap-2 mb-5">
         <TabLink current={tab} value="paid" label="Pago" />
@@ -108,7 +140,7 @@ export default async function DespesasPage({
         <TransactionsList
           txs={fixed}
           categories={categories}
-          emptyMessage="Nenhuma despesa fixa no período. Marque uma despesa como fixa no formulário (toggle “Lançamento fixo”) e ela aparece aqui."
+          emptyMessage="Nenhuma despesa fixa no período. Marque uma despesa como fixa no formulário (toggle 'Lançamento fixo') e ela aparece aqui."
         />
       )}
 

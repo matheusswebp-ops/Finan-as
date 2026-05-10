@@ -27,7 +27,7 @@ export type TransactionInput = z.infer<typeof transactionSchema>;
 
 export const goalSchema = z.object({
   id: z.string().uuid().optional(),
-  goal_kind: z.enum(["expense", "income"]),
+  goal_kind: z.enum(["expense", "income", "profit"]),
   category_id: z.string().uuid().nullable(),
   month: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Mês inválido."),
   limit_cents: z

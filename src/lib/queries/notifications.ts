@@ -2,6 +2,7 @@ import { cache } from "react";
 import { addDays, differenceInCalendarDays, endOfMonth, format, parseISO } from "date-fns";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentMember } from "@/lib/queries/membership";
+import { brazilToday } from "@/lib/tz";
 
 export type Notification = {
   id: string;
@@ -16,8 +17,8 @@ export type Notification = {
 export const getNotifications = cache(async (): Promise<Notification[]> => {
   const member = await getCurrentMember();
   const supabase = await createClient();
-  const today = new Date();
-  const todayIso = format(today, "yyyy-MM-dd");
+  const todayIso = brazilToday();
+  const today = parseISO(todayIso);
   const in7daysIso = format(addDays(today, 7), "yyyy-MM-dd");
 
   const [pendingRes, overdueRes, dreamsRes, goalsRes] = await Promise.all([
@@ -95,7 +96,7 @@ export const getNotifications = cache(async (): Promise<Notification[]> => {
 
   // Verifica metas em risco (consulta os agregados pra evitar duplicação)
   // Simples: se já existem metas globais e o realizado for crítico, alerta.
-  const monthStart = format(new Date(today.getFullYear(), today.getMonth(), 1), "yyyy-MM-dd");
+  const monthStart = todayIso.slice(0, 7) + "-01";
   const monthEnd = format(endOfMonth(today), "yyyy-MM-dd");
   const { data: monthTxs } = await supabase
     .from("transactions")

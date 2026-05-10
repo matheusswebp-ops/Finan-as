@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { format, startOfMonth, endOfMonth } from "date-fns";
+import { format, parseISO, startOfMonth, endOfMonth } from "date-fns";
 import { Card } from "@/components/ui/card";
 import { PageHeader } from "@/components/finance/PageHeader";
 import { MonthRangeNav } from "@/components/finance/MonthRangeNav";
@@ -10,6 +10,7 @@ import { CategoryBreakdownPanel } from "../despesas/CategoryBreakdownPanel";
 import { listTransactions, totalsForList } from "@/lib/queries/transactions";
 import { getCategories } from "@/lib/queries/categories";
 import { getCategoryBreakdown, getCategoryBreakdownForecast } from "@/lib/queries/balance";
+import { brazilToday } from "@/lib/tz";
 import { formatBRL } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
@@ -26,7 +27,7 @@ export default async function EntradasPage({
   const sp = await searchParams;
   const tab: Tab = (sp.tab as Tab) ?? "received";
 
-  const today = new Date();
+  const today = parseISO(brazilToday());
   const from = sp.from ?? format(startOfMonth(today), "yyyy-MM-dd");
   const to = sp.to ?? format(endOfMonth(today), "yyyy-MM-dd");
 
@@ -39,6 +40,9 @@ export default async function EntradasPage({
       getCategoryBreakdown("income", from, to),
       getCategoryBreakdownForecast("income", from, to),
     ]);
+
+  const totalRecebido = totalsForList(received).income;
+  const totalAReceber = totalsForList(due).income;
 
   const totals =
     tab === "received"
@@ -57,6 +61,34 @@ export default async function EntradasPage({
         description="Acompanhe o que já foi recebido, o que ainda está por receber e a distribuição por categoria."
         actions={<CopyPreviousMonthButton kind="income" referenceIso={from} />}
       />
+
+      {/* Cards de resumo */}
+      <div className="grid grid-cols-3 gap-3 mb-5">
+        <Card className="!p-4 space-y-1">
+          <p className="text-[10px] uppercase tracking-wider text-fg-muted font-semibold truncate">
+            Recebido
+          </p>
+          <p className="font-display text-lg sm:text-2xl font-semibold tabular-nums text-success truncate">
+            {formatBRL(totalRecebido)}
+          </p>
+        </Card>
+        <Card className="!p-4 space-y-1">
+          <p className="text-[10px] uppercase tracking-wider text-fg-muted font-semibold truncate">
+            A receber
+          </p>
+          <p className="font-display text-lg sm:text-2xl font-semibold tabular-nums text-warning truncate">
+            {formatBRL(totalAReceber)}
+          </p>
+        </Card>
+        <Card className="!p-4 space-y-1">
+          <p className="text-[10px] uppercase tracking-wider text-fg-muted font-semibold truncate">
+            Total
+          </p>
+          <p className="font-display text-lg sm:text-2xl font-semibold tabular-nums truncate">
+            {formatBRL(totalRecebido + totalAReceber)}
+          </p>
+        </Card>
+      </div>
 
       <div className="flex flex-wrap items-center gap-2 mb-5">
         <TabLink current={tab} value="received" label="Recebido" />
@@ -108,7 +140,7 @@ export default async function EntradasPage({
         <TransactionsList
           txs={fixed}
           categories={categories}
-          emptyMessage="Nenhuma entrada fixa no período. Marque uma entrada como fixa no formulário (toggle “Lançamento fixo”) e ela aparece aqui."
+          emptyMessage="Nenhuma entrada fixa no período. Marque uma entrada como fixa no formulário (toggle 'Lançamento fixo') e ela aparece aqui."
         />
       )}
 

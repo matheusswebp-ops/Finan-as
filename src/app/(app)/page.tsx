@@ -143,7 +143,7 @@ export default async function DashboardPage({
             <div>
               <p className="text-xs text-fg-muted flex items-center gap-1.5">
                 <CheckCircle2 className="h-3 w-3 text-success" />
-                Realizado
+                Recebido
               </p>
               <p className="font-display text-xl sm:text-2xl font-medium tabular-nums mt-1 truncate">
                 {formatBRL(summary.income.realized)}
@@ -172,7 +172,7 @@ export default async function DashboardPage({
             <div>
               <p className="text-xs text-fg-muted flex items-center gap-1.5">
                 <CheckCircle2 className="h-3 w-3 text-success" />
-                Realizado
+                Pago
               </p>
               <p className="font-display text-xl sm:text-2xl font-medium tabular-nums mt-1 truncate">
                 {formatBRL(summary.expense.realized)}
@@ -203,7 +203,7 @@ export default async function DashboardPage({
             <div className="flex flex-wrap items-end justify-between gap-4">
               <div className="space-y-2 min-w-0">
                 <p className="text-[10px] sm:text-[11px] uppercase tracking-[0.22em] text-fg-muted font-semibold">
-                  Saldo realizado
+                  Saldo restante
                 </p>
                 <h2 className="font-display text-[2.25rem] sm:text-5xl lg:text-6xl font-medium tracking-[-0.02em] tabular-nums leading-none break-words">
                   {formatBRL(summary.balance)}

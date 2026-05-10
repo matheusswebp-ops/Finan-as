@@ -33,7 +33,7 @@ export function GoalDialog({
   open: boolean;
   onOpenChange: (open: boolean) => void;
   monthIso: string;
-  goalKind?: "expense" | "income";
+  goalKind?: "expense" | "income" | "profit";
   categoryId: string | null;
   categoryName: string;
   existingGoalId?: string;
@@ -94,14 +94,16 @@ export function GoalDialog({
           <DialogHeader>
             <DialogTitle>Meta de {categoryName}</DialogTitle>
             <DialogDescription>
-              {goalKind === "income"
-                ? "Defina o quanto deseja receber neste mês."
-                : "Defina um teto de gastos para este mês."}
+              {goalKind === "profit"
+                ? "Defina o lucro líquido alvo para este mês."
+                : goalKind === "income"
+                  ? "Defina o quanto deseja faturar neste mês."
+                  : "Defina um teto de gastos para este mês."}
             </DialogDescription>
           </DialogHeader>
           <div className="rounded-2xl bg-surface-2 border border-border p-5 space-y-1">
             <Label className="block">
-              {goalKind === "income" ? "Valor da meta" : "Limite"}
+              {goalKind === "profit" ? "Lucro alvo" : goalKind === "income" ? "Faturamento alvo" : "Limite"}
             </Label>
             <Controller
               control={control}

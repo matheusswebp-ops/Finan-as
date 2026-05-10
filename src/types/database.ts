@@ -390,4 +390,4 @@ export type Profit = Database["public"]["Tables"]["monthly_profits"]["Row"];
 
 export type TxKind = "expense" | "income";
 export type TxStatus = "realized" | "forecast";
-export type GoalKind = "expense" | "income";
+export type GoalKind = "expense" | "income" | "profit";

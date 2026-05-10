@@ -1,4 +1,5 @@
 import { Plus } from "lucide-react";
+import { brazilHour } from "@/lib/tz";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { getCurrentMember } from "@/lib/queries/membership";
@@ -22,11 +23,8 @@ export async function Topbar() {
     <header className="sticky top-0 z-30 px-4 sm:px-6 lg:px-0 pt-4 lg:pt-6 pb-3 lg:pb-4 bg-bg/85 backdrop-blur-xl backdrop-saturate-150 border-b border-border lg:border-b-0">
       <div className="flex items-center gap-2 sm:gap-3">
         <div className="flex-1 min-w-0">
-          <p className="text-[10px] sm:text-[11px] uppercase tracking-[0.18em] text-fg-muted font-medium truncate">
-            {greeting()}
-          </p>
           <h1 className="font-display text-lg sm:text-2xl font-semibold tracking-tight truncate">
-            Olá, <span className="text-primary">{firstName}</span>
+            {greeting(firstName)}
           </h1>
         </div>
 
@@ -68,10 +66,10 @@ export async function Topbar() {
   );
 }
 
-function greeting(): string {
-  const h = new Date().getHours();
-  if (h < 5) return "Boa madrugada";
-  if (h < 12) return "Bom dia";
-  if (h < 18) return "Boa tarde";
-  return "Boa noite";
+function greeting(name: string): string {
+  const h = brazilHour();
+  if (h < 5) return `Boa madrugada, ${name}!`;
+  if (h < 12) return `Bom dia! Tudo bem, ${name}?`;
+  if (h < 18) return `Boa tarde! Tudo bem, ${name}?`;
+  return `Boa noite, ${name}!`;
 }

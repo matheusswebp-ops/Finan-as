@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Edit3, Plus, Target, TrendingUp } from "lucide-react";
+import { Edit3, PiggyBank, Plus, Target, TrendingUp } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
@@ -12,7 +12,7 @@ import { formatBRL, formatPercent } from "@/lib/format";
 
 export type GoalCardProps = {
   monthIso: string;
-  goalKind?: "expense" | "income";
+  goalKind?: "expense" | "income" | "profit";
   categoryId: string | null;
   categoryName: string;
   categoryColor: string;
@@ -29,12 +29,15 @@ export function GoalCard(props: GoalCardProps) {
   const hasGoal = !!props.goalId;
   const pct = props.pct ?? 0;
   const isIncome = props.goalKind === "income";
+  const isProfit = props.goalKind === "profit";
 
-  const subLabel = isIncome
-    ? "Meta de receita"
-    : props.global
-      ? "Teto global"
-      : "Categoria de saída";
+  const subLabel = isProfit
+    ? "Meta de lucro"
+    : isIncome
+      ? "Meta de faturamento"
+      : props.global
+        ? "Teto global"
+        : "Categoria de saída";
 
   return (
     <>
@@ -43,19 +46,29 @@ export function GoalCard(props: GoalCardProps) {
           <span
             className="h-10 w-10 rounded-xl grid place-items-center shrink-0"
             style={{
-              background: isIncome
-                ? "hsl(var(--success-soft))"
-                : props.global
-                  ? "hsl(var(--primary-soft))"
-                  : categoryBgSoft(props.categoryColor),
-              color: isIncome
-                ? "hsl(var(--success))"
-                : props.global
-                  ? "hsl(var(--primary))"
-                  : categoryHsl(props.categoryColor),
+              background: isProfit
+                ? "hsl(var(--primary-soft))"
+                : isIncome
+                  ? "hsl(var(--success-soft))"
+                  : props.global
+                    ? "hsl(var(--primary-soft))"
+                    : categoryBgSoft(props.categoryColor),
+              color: isProfit
+                ? "hsl(var(--primary))"
+                : isIncome
+                  ? "hsl(var(--success))"
+                  : props.global
+                    ? "hsl(var(--primary))"
+                    : categoryHsl(props.categoryColor),
             }}
           >
-            {isIncome ? <TrendingUp className="h-4 w-4" /> : <Target className="h-4 w-4" />}
+            {isProfit ? (
+              <PiggyBank className="h-4 w-4" />
+            ) : isIncome ? (
+              <TrendingUp className="h-4 w-4" />
+            ) : (
+              <Target className="h-4 w-4" />
+            )}
           </span>
           <div className="flex-1 min-w-0">
             <p className="font-display font-semibold text-base truncate">
@@ -108,33 +121,52 @@ export function GoalCard(props: GoalCardProps) {
                 }
               />
               <div className="flex items-center justify-between text-xs text-fg-muted tabular-nums">
-                <span>{formatPercent(pct)} {isIncome ? "atingido" : "usado"}</span>
                 <span>
-                  {isIncome
+                  {isProfit
+                    ? props.usedCents < 0
+                      ? "No negativo"
+                      : `${formatPercent(pct)} do lucro alvo`
+                    : isIncome
+                      ? `${formatPercent(pct)} atingido`
+                      : `${formatPercent(pct)} usado`}
+                </span>
+                <span>
+                  {isProfit
                     ? pct >= 1
-                      ? "Meta atingida"
-                      : `Faltam ${formatBRL(Math.max(0, (props.limitCents ?? 0) - props.usedCents))}`
-                    : pct >= 1
-                      ? `Excedeu em ${formatBRL(props.usedCents - (props.limitCents ?? 0))}`
-                      : `Restam ${formatBRL((props.limitCents ?? 0) - props.usedCents)}`}
+                      ? "Meta atingida!"
+                      : props.usedCents < 0
+                        ? `Prejuízo de ${formatBRL(Math.abs(props.usedCents))}`
+                        : `Faltam ${formatBRL(Math.max(0, (props.limitCents ?? 0) - props.usedCents))}`
+                    : isIncome
+                      ? pct >= 1
+                        ? "Meta atingida"
+                        : `Faltam ${formatBRL(Math.max(0, (props.limitCents ?? 0) - props.usedCents))}`
+                      : pct >= 1
+                        ? `Excedeu em ${formatBRL(props.usedCents - (props.limitCents ?? 0))}`
+                        : `Restam ${formatBRL((props.limitCents ?? 0) - props.usedCents)}`}
                 </span>
               </div>
-              {!isIncome && props.level === "warning" && (
+              {!isIncome && !isProfit && props.level === "warning" && (
                 <Badge variant="warning">Próximo do limite</Badge>
               )}
-              {!isIncome && props.level === "over" && (
+              {!isIncome && !isProfit && props.level === "over" && (
                 <Badge variant="danger">Acima da meta</Badge>
               )}
-              {isIncome && props.level === "ok" && (
+              {(isIncome || isProfit) && props.level === "ok" && (
                 <Badge variant="success">Meta atingida</Badge>
+              )}
+              {isProfit && props.level === "over" && props.usedCents < 0 && (
+                <Badge variant="danger">Mês no negativo</Badge>
               )}
             </div>
           </>
         ) : (
           <p className="text-sm text-fg-muted">
-            {isIncome
-              ? "Sem meta de receita. Defina um valor para acompanhar o progresso."
-              : "Sem meta este mês. Defina um teto para receber alertas ao se aproximar."}
+            {isProfit
+              ? "Sem meta de lucro. Defina o lucro alvo do mês para acompanhar o progresso."
+              : isIncome
+                ? "Sem meta de faturamento. Defina um valor para acompanhar o progresso."
+                : "Sem meta este mês. Defina um teto para receber alertas ao se aproximar."}
           </p>
         )}
       </Card>
@@ -143,7 +175,7 @@ export function GoalCard(props: GoalCardProps) {
         open={open}
         onOpenChange={setOpen}
         monthIso={props.monthIso}
-        goalKind={props.goalKind ?? "expense"}
+        goalKind={(props.goalKind ?? "expense") as "expense" | "income" | "profit"}
         categoryId={props.categoryId}
         categoryName={props.categoryName}
         existingGoalId={props.goalId}

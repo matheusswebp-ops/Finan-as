@@ -56,22 +56,26 @@ export const getMonthGoals = cache(async (month?: string): Promise<GoalWithUsage
     }
   }
 
+  const netBalance = totalIncome - totalExpense;
+
   return (goals ?? []).map((g) => {
     const cat = (cats ?? []).find((c) => c.id === g.category_id) ?? null;
     let used = 0;
     if (g.goal_kind === "income") {
       used = totalIncome;
+    } else if (g.goal_kind === "profit") {
+      used = netBalance;
     } else if (g.category_id) {
       used = expenseByCategory.get(g.category_id) ?? 0;
     } else {
       used = totalExpense;
     }
-    const pct = g.limit_cents ? used / g.limit_cents : 0;
+    const pct = g.limit_cents ? Math.max(0, used) / g.limit_cents : 0;
     const level: GoalWithUsage["level"] =
-      g.goal_kind === "income"
+      g.goal_kind === "income" || g.goal_kind === "profit"
         ? pct >= 1
           ? "ok"
-          : pct >= 0.6
+          : pct >= 0.5
             ? "warning"
             : "over"
         : pct >= 1
