@@ -18,6 +18,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { MoneyInput } from "@/components/forms/MoneyInput";
+import { DreamImageUploader } from "./DreamImageUploader";
 import { dreamSchema, type DreamInput } from "@/lib/schemas/transaction";
 import { createDream, updateDream } from "@/lib/actions/dreams";
 import type { Dream } from "@/types/database";
@@ -107,18 +108,16 @@ export function DreamFormDialog({
             />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="image_url">URL da imagem (opcional)</Label>
-            <Input
-              id="image_url"
-              type="url"
-              placeholder="Cole o link de uma foto"
-              {...register("image_url")}
-            />
-            {errors.image_url && (
-              <p className="text-xs text-danger">{errors.image_url.message}</p>
+          <Controller
+            control={control}
+            name="image_url"
+            render={({ field }) => (
+              <DreamImageUploader
+                value={field.value ?? ""}
+                onChange={(url) => field.onChange(url)}
+              />
             )}
-          </div>
+          />
 
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-2">
