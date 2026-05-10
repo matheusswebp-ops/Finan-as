@@ -51,7 +51,14 @@ export default async function MetasPage({
     ? incomePct >= 1 ? "ok" : incomePct >= 0.6 ? "warning" : "over"
     : undefined;
 
-  const netBalance = summary.income.realized - summary.expense.realized;
+  // Lucro previsto = (recebido + a receber) - (pago + a pagar)
+  const netBalance =
+    (summary.income.realized + summary.income.forecast) -
+    (summary.expense.realized + summary.expense.forecast);
+  const profitPct = profitGoal ? Math.max(0, netBalance) / profitGoal.goal.limit_cents : 0;
+  const profitLevel: "ok" | "warning" | "over" | undefined = profitGoal
+    ? profitPct >= 1 ? "ok" : netBalance > 0 ? "warning" : "over"
+    : undefined;
   const goalByCat = new Map(
     goals
       .filter((g) => g.goal.goal_kind === "expense" && g.goal.category_id)
@@ -173,12 +180,8 @@ export default async function MetasPage({
           goalId={profitGoal?.goal.id}
           limitCents={profitGoal?.goal.limit_cents}
           usedCents={netBalance}
-          pct={
-            profitGoal
-              ? Math.max(0, netBalance) / profitGoal.goal.limit_cents
-              : undefined
-          }
-          level={profitGoal?.level}
+          pct={profitGoal ? profitPct : undefined}
+          level={profitLevel}
         />
       </div>
 
