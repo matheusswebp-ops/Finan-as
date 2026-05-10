@@ -44,6 +44,13 @@ export default async function MetasPage({
   const profitGoal = goals.find(
     (g) => g.goal.goal_kind === "profit" && g.goal.category_id === null
   );
+  // Faturamento = realizado + previsto (para saber quanto falta bater a meta)
+  const totalIncomeCents = summary.income.realized + summary.income.forecast;
+  const incomePct = incomeGoal ? totalIncomeCents / incomeGoal.goal.limit_cents : 0;
+  const incomeLevel: "ok" | "warning" | "over" | undefined = incomeGoal
+    ? incomePct >= 1 ? "ok" : incomePct >= 0.6 ? "warning" : "over"
+    : undefined;
+
   const netBalance = summary.income.realized - summary.expense.realized;
   const goalByCat = new Map(
     goals
@@ -136,13 +143,9 @@ export default async function MetasPage({
           categoryColor="cat-4"
           goalId={incomeGoal?.goal.id}
           limitCents={incomeGoal?.goal.limit_cents}
-          usedCents={summary.income.realized}
-          pct={
-            incomeGoal
-              ? summary.income.realized / incomeGoal.goal.limit_cents
-              : undefined
-          }
-          level={incomeGoal?.level}
+          usedCents={totalIncomeCents}
+          pct={incomeGoal ? incomePct : undefined}
+          level={incomeLevel}
         />
         <GoalCard
           monthIso={monthIso}
