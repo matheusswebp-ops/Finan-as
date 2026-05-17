@@ -13,6 +13,7 @@ import {
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentMember } from "@/lib/queries/membership";
 import { transactionSchema, type TransactionInput } from "@/lib/schemas/transaction";
+import { brazilToday } from "@/lib/tz";
 
 type ActionResult = { ok: true } | { ok: false; error: string };
 type CopyResult = { ok: true; count: number } | { ok: false; error: string };
@@ -89,19 +90,73 @@ export async function updateTransaction(input: TransactionInput): Promise<Action
   }
   const data = parsed.data;
   const supabase = await createClient();
-  const { error } = await supabase
-    .from("transactions")
-    .update({
-      kind: data.kind,
-      status: data.status,
-      amount_cents: data.amount_cents,
-      description: data.description,
-      category_id: data.category_id ?? null,
-      occurred_on: data.occurred_on,
-      is_recurring: data.is_recurring ?? false,
-    })
-    .eq("id", input.id!);
-  if (error) return { ok: false, error: error.message };
+  const abate = data.abate_cents ?? 0;
+
+  if (abate > 0 && data.status === "forecast") {
+    const member = await getCurrentMember();
+    const remaining = data.amount_cents - abate;
+
+    if (remaining <= 0) {
+      // Pagamento total — marca a despesa original como realizada
+      const { error } = await supabase
+        .from("transactions")
+        .update({
+          kind: data.kind,
+          status: "realized",
+          amount_cents: data.amount_cents,
+          description: data.description,
+          category_id: data.category_id ?? null,
+          occurred_on: data.occurred_on,
+          is_recurring: data.is_recurring ?? false,
+        })
+        .eq("id", input.id!);
+      if (error) return { ok: false, error: error.message };
+    } else {
+      // Pagamento parcial — cria realizado + reduz previsão
+      const [updateRes, insertRes] = await Promise.all([
+        supabase
+          .from("transactions")
+          .update({
+            kind: data.kind,
+            status: "forecast",
+            amount_cents: remaining,
+            description: data.description,
+            category_id: data.category_id ?? null,
+            occurred_on: data.occurred_on,
+            is_recurring: data.is_recurring ?? false,
+          })
+          .eq("id", input.id!),
+        supabase.from("transactions").insert({
+          household_id: member.householdId,
+          created_by: member.memberId,
+          kind: data.kind,
+          status: "realized",
+          amount_cents: abate,
+          description: data.description,
+          category_id: data.category_id ?? null,
+          occurred_on: brazilToday(),
+          is_recurring: false,
+        }),
+      ]);
+      if (updateRes.error) return { ok: false, error: updateRes.error.message };
+      if (insertRes.error) return { ok: false, error: insertRes.error.message };
+    }
+  } else {
+    const { error } = await supabase
+      .from("transactions")
+      .update({
+        kind: data.kind,
+        status: data.status,
+        amount_cents: data.amount_cents,
+        description: data.description,
+        category_id: data.category_id ?? null,
+        occurred_on: data.occurred_on,
+        is_recurring: data.is_recurring ?? false,
+      })
+      .eq("id", input.id!);
+    if (error) return { ok: false, error: error.message };
+  }
+
   revalidateAll();
   return { ok: true };
 }

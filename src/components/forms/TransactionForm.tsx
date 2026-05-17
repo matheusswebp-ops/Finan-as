@@ -11,6 +11,7 @@ import {
   Infinity as InfinityIcon,
   Loader2,
   Repeat,
+  Minus,
 } from "lucide-react";
 import { format } from "date-fns";
 import { toast } from "sonner";
@@ -78,6 +79,7 @@ export function TransactionForm({
       occurred_on: initial?.occurred_on ?? today,
       is_recurring: initial?.is_recurring ?? false,
       installment_total: initial?.installment_total ?? null,
+      abate_cents: null,
     },
   });
 
@@ -98,14 +100,17 @@ export function TransactionForm({
         toast.error("Não foi possível salvar", { description: result.error });
         return;
       }
-      // Festejar quando uma conta sai de "previsto" para "pago"
+      const abate = data.abate_cents ?? 0;
       const becamePaid =
-        data.status === "realized" &&
-        (previousStatus === "forecast" || (!initial?.id && data.status === "realized" && data.kind === "expense"));
-      if (becamePaid && previousStatus === "forecast") {
-        celebrate();
-      }
-      toast.success(initial?.id ? "Lançamento atualizado" : "Lançamento adicionado");
+        (data.status === "realized" && previousStatus === "forecast") ||
+        (abate > 0 && abate >= data.amount_cents);
+      if (becamePaid) celebrate();
+      const successMsg = abate > 0
+        ? abate >= data.amount_cents
+          ? "Despesa quitada!"
+          : "Pagamento parcial registrado!"
+        : initial?.id ? "Lançamento atualizado" : "Lançamento adicionado";
+      toast.success(successMsg);
       onSuccess?.();
     });
   };
@@ -339,6 +344,34 @@ export function TransactionForm({
               />
             </div>
           )}
+        </div>
+      )}
+
+      {/* Abatimento parcial — só aparece ao editar um previsto */}
+      {initial?.id && previousStatus === "forecast" && (
+        <div className="rounded-2xl bg-surface-2 border border-border p-5 space-y-3">
+          <div className="flex items-center gap-3">
+            <span className="grid place-items-center h-7 w-7 rounded-lg bg-danger-soft text-danger">
+              <Minus className="h-4 w-4" />
+            </span>
+            <div>
+              <p className="text-sm font-medium">Registrar pagamento</p>
+              <p className="text-xs text-fg-muted">
+                Valor pago hoje. O restante continua como previsto.
+              </p>
+            </div>
+          </div>
+          <Controller
+            control={control}
+            name="abate_cents"
+            render={({ field }) => (
+              <MoneyInput
+                value={field.value ?? 0}
+                onChange={field.onChange}
+                placeholder="R$ 0,00"
+              />
+            )}
+          />
         </div>
       )}
 

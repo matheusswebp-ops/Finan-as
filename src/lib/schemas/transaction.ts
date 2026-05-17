@@ -21,7 +21,8 @@ export const transactionSchema = z.object({
     .min(2, "Mínimo 2 parcelas.")
     .max(60, "Máximo 60 parcelas.")
     .nullable(),
-});
+  abate_cents: z.number().int().min(0).nullable().optional(),
+})
 
 export type TransactionInput = z.infer<typeof transactionSchema>;
 
