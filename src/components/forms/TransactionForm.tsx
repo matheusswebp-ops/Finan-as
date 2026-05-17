@@ -80,6 +80,7 @@ export function TransactionForm({
       is_recurring: initial?.is_recurring ?? false,
       installment_total: initial?.installment_total ?? null,
       abate_cents: null,
+      deduct_from_forecast: false,
     },
   });
 
@@ -345,6 +346,33 @@ export function TransactionForm({
             </div>
           )}
         </div>
+      )}
+
+      {/* Abater do previsto da categoria — só em despesas pagas novas com categoria */}
+      {!initial?.id && kind === "expense" && watch("status") === "realized" && watch("category_id") && (
+        <Controller
+          control={control}
+          name="deduct_from_forecast"
+          render={({ field }) => (
+            <div className="flex items-center justify-between gap-4 rounded-xl bg-surface-2 border border-border px-4 py-3">
+              <div className="flex items-start gap-3">
+                <span className="mt-0.5 grid place-items-center h-7 w-7 rounded-lg bg-warning-soft text-warning">
+                  <Minus className="h-4 w-4" />
+                </span>
+                <div>
+                  <p className="text-sm font-medium">Abater do previsto desta categoria</p>
+                  <p className="text-xs text-fg-muted">
+                    Desconta este valor do que está a pagar nesta categoria no mês.
+                  </p>
+                </div>
+              </div>
+              <Switch
+                checked={!!field.value}
+                onCheckedChange={field.onChange}
+              />
+            </div>
+          )}
+        />
       )}
 
       {/* Abatimento parcial — só aparece ao editar um previsto */}

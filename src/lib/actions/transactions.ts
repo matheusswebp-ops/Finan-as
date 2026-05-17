@@ -7,6 +7,7 @@ import {
   format,
   formatISO,
   parse,
+  parseISO,
   startOfMonth,
   subMonths,
 } from "date-fns";
@@ -27,8 +28,47 @@ function revalidateAll() {
     "/metas",
     "/lucros",
     "/sonhos",
+    "/entradas",
   ]) {
     revalidatePath(p);
+  }
+}
+
+async function deductFromForecast(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  categoryId: string,
+  amountCents: number,
+  occurredOn: string
+) {
+  const monthStart = format(startOfMonth(parseISO(occurredOn)), "yyyy-MM-dd");
+  const monthEnd = format(endOfMonth(parseISO(occurredOn)), "yyyy-MM-dd");
+
+  const { data: forecasts } = await supabase
+    .from("transactions")
+    .select("id, amount_cents")
+    .eq("kind", "expense")
+    .eq("status", "forecast")
+    .eq("category_id", categoryId)
+    .gte("occurred_on", monthStart)
+    .lte("occurred_on", monthEnd)
+    .order("amount_cents", { ascending: false })
+    .limit(1);
+
+  if (!forecasts || forecasts.length === 0) return;
+
+  const forecast = forecasts[0];
+  const remaining = forecast.amount_cents - amountCents;
+
+  if (remaining <= 0) {
+    await supabase
+      .from("transactions")
+      .update({ status: "realized", amount_cents: forecast.amount_cents })
+      .eq("id", forecast.id);
+  } else {
+    await supabase
+      .from("transactions")
+      .update({ amount_cents: remaining })
+      .eq("id", forecast.id);
   }
 }
 
@@ -76,6 +116,15 @@ export async function createTransaction(input: TransactionInput): Promise<Action
       is_recurring: data.is_recurring ?? false,
     });
     if (error) return { ok: false, error: error.message };
+
+    if (
+      data.deduct_from_forecast &&
+      data.status === "realized" &&
+      data.kind === "expense" &&
+      data.category_id
+    ) {
+      await deductFromForecast(supabase, data.category_id, data.amount_cents, data.occurred_on);
+    }
   }
 
   revalidateAll();
