@@ -349,7 +349,7 @@ export function TransactionForm({
       )}
 
       {/* Abater do previsto da categoria — só em despesas pagas novas com categoria */}
-      {!initial?.id && kind === "expense" && watch("status") === "realized" && watch("category_id") && (
+      {!initial?.id && watch("status") === "realized" && watch("category_id") && (
         <Controller
           control={control}
           name="deduct_from_forecast"
@@ -362,7 +362,9 @@ export function TransactionForm({
                 <div>
                   <p className="text-sm font-medium">Abater do previsto desta categoria</p>
                   <p className="text-xs text-fg-muted">
-                    Desconta este valor do que está a pagar nesta categoria no mês.
+                    {kind === "expense"
+                      ? "Desconta este valor do que está a pagar nesta categoria no mês."
+                      : "Desconta este valor do que está a receber nesta categoria no mês."}
                   </p>
                 </div>
               </div>

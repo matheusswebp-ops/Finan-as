@@ -36,6 +36,7 @@ function revalidateAll() {
 
 async function deductFromForecast(
   supabase: Awaited<ReturnType<typeof createClient>>,
+  kind: "expense" | "income",
   categoryId: string,
   amountCents: number,
   occurredOn: string
@@ -46,7 +47,7 @@ async function deductFromForecast(
   const { data: forecasts } = await supabase
     .from("transactions")
     .select("id, amount_cents")
-    .eq("kind", "expense")
+    .eq("kind", kind)
     .eq("status", "forecast")
     .eq("category_id", categoryId)
     .gte("occurred_on", monthStart)
@@ -120,10 +121,9 @@ export async function createTransaction(input: TransactionInput): Promise<Action
     if (
       data.deduct_from_forecast &&
       data.status === "realized" &&
-      data.kind === "expense" &&
       data.category_id
     ) {
-      await deductFromForecast(supabase, data.category_id, data.amount_cents, data.occurred_on);
+      await deductFromForecast(supabase, data.kind, data.category_id, data.amount_cents, data.occurred_on);
     }
   }
 
