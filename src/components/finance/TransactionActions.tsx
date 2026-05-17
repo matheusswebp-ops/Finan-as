@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { CheckCircle2, Edit3, MoreHorizontal, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -34,6 +35,7 @@ export function TransactionActions({
   tx: TxWithRelations;
   categories: Category[];
 }) {
+  const router = useRouter();
   const [editOpen, setEditOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
@@ -47,6 +49,7 @@ export function TransactionActions({
       }
       toast.success("Lançamento excluído");
       setConfirmOpen(false);
+      router.refresh();
     });
   };
 
@@ -61,6 +64,7 @@ export function TransactionActions({
       toast.success(tx.kind === "expense" ? "Conta paga, parabéns!" : "Receita confirmada!", {
         description: tx.description,
       });
+      router.refresh();
     });
   };
 
@@ -112,7 +116,10 @@ export function TransactionActions({
               is_recurring: tx.is_recurring,
               installment_total: tx.installment_total,
             }}
-            onSuccess={() => setEditOpen(false)}
+            onSuccess={() => {
+                setEditOpen(false);
+                router.refresh();
+              }}
             previousStatus={tx.status as "realized" | "forecast"}
           />
         </DialogContent>

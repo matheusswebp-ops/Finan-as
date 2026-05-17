@@ -1,6 +1,7 @@
 "use client";
 
 import { useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { Check, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { celebrate } from "@/components/finance/Celebration";
@@ -16,6 +17,7 @@ export function MarkPaidButton({
   kind: "expense" | "income";
   className?: string;
 }) {
+  const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const label = kind === "expense" ? "Marcar como pago" : "Marcar como recebido";
   const successMsg = kind === "expense" ? "Conta paga, parabéns!" : "Receita confirmada!";
@@ -34,6 +36,7 @@ export function MarkPaidButton({
           }
           celebrate();
           toast.success(successMsg);
+          router.refresh();
         });
       }}
       aria-label={label}

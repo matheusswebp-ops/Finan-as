@@ -36,6 +36,7 @@ import {
 } from "@/lib/queries/balance";
 import { getMonthGoals } from "@/lib/queries/goals";
 import { capitalize, formatBRL } from "@/lib/format";
+import { brazilToday } from "@/lib/tz";
 
 export const dynamic = "force-dynamic";
 
@@ -70,7 +71,7 @@ export default async function DashboardPage({
         : capitalize(format(new Date(), "MMMM 'de' yyyy", { locale: ptBR }));
 
   // Saturday weekly report
-  const today = new Date();
+  const today = parseISO(brazilToday());
   const isSaturday = today.getDay() === 6;
   let weeklyReport: {
     weekLabel: string;

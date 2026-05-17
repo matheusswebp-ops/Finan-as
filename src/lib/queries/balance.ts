@@ -4,6 +4,7 @@ import {
   endOfMonth,
   endOfWeek,
   format,
+  parseISO,
   startOfDay,
   startOfMonth,
   startOfWeek,
@@ -11,6 +12,7 @@ import {
 } from "date-fns";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentMember } from "@/lib/queries/membership";
+import { brazilToday } from "@/lib/tz";
 import type { Category, Tx } from "@/types/database";
 
 export type Period = "day" | "week" | "month";
@@ -26,14 +28,15 @@ export type PeriodSummary = {
 
 const isoDate = (d: Date) => format(d, "yyyy-MM-dd");
 
-function rangeFor(period: Period, anchor = new Date()): { from: Date; to: Date } {
-  if (period === "day") return { from: startOfDay(anchor), to: endOfDay(anchor) };
+function rangeFor(period: Period, anchor?: Date): { from: Date; to: Date } {
+  const a = anchor ?? parseISO(brazilToday());
+  if (period === "day") return { from: startOfDay(a), to: endOfDay(a) };
   if (period === "week")
     return {
-      from: startOfWeek(anchor, { weekStartsOn: 1 }),
-      to: endOfWeek(anchor, { weekStartsOn: 1 }),
+      from: startOfWeek(a, { weekStartsOn: 1 }),
+      to: endOfWeek(a, { weekStartsOn: 1 }),
     };
-  return { from: startOfMonth(anchor), to: endOfMonth(anchor) };
+  return { from: startOfMonth(a), to: endOfMonth(a) };
 }
 
 async function fetchTxRange(from: string, to: string): Promise<Tx[]> {
@@ -50,7 +53,7 @@ async function fetchTxRange(from: string, to: string): Promise<Tx[]> {
 }
 
 export const getPeriodSummary = cache(
-  async (period: Period, anchor: Date = new Date()): Promise<PeriodSummary> => {
+  async (period: Period, anchor?: Date): Promise<PeriodSummary> => {
     const { from, to } = rangeFor(period, anchor);
     const fromIso = isoDate(from);
     const toIso = isoDate(to);
@@ -95,14 +98,15 @@ export type MonthlyHistoryPoint = {
 };
 
 export const getMonthlyHistory = cache(
-  async (months = 6, anchor: Date = new Date()): Promise<MonthlyHistoryPoint[]> => {
-    const start = startOfMonth(subMonths(anchor, months - 1));
-    const end = endOfMonth(anchor);
+  async (months = 6, anchor?: Date): Promise<MonthlyHistoryPoint[]> => {
+    const a = anchor ?? parseISO(brazilToday());
+    const start = startOfMonth(subMonths(a, months - 1));
+    const end = endOfMonth(a);
     const txs = await fetchTxRange(isoDate(start), isoDate(end));
 
     const buckets: Record<string, { income: number; expense: number }> = {};
     for (let i = 0; i < months; i++) {
-      const d = subMonths(anchor, months - 1 - i);
+      const d = subMonths(a, months - 1 - i);
       buckets[format(d, "yyyy-MM")] = { income: 0, expense: 0 };
     }
     for (const t of txs) {
@@ -143,8 +147,9 @@ async function categoryBreakdownByStatus(
   await getCurrentMember();
   const supabase = await createClient();
 
-  const start = fromIso ?? isoDate(startOfMonth(new Date()));
-  const end = toIso ?? isoDate(endOfMonth(new Date()));
+  const today = parseISO(brazilToday());
+  const start = fromIso ?? isoDate(startOfMonth(today));
+  const end = toIso ?? isoDate(endOfMonth(today));
 
   const [{ data: txs }, { data: cats }] = await Promise.all([
     supabase
@@ -206,7 +211,6 @@ export const getRecentTransactions = cache(
       .select(
         "*, category:categories(id, name, color, icon), member:household_members(display_name)"
       )
-      .order("occurred_on", { ascending: false })
       .order("created_at", { ascending: false })
       .limit(limit);
     if (error) throw new Error(error.message);

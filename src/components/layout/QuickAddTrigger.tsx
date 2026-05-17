@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   Dialog,
   DialogContent,
@@ -15,6 +16,7 @@ import type { Category } from "@/types/database";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export function QuickAddTrigger({ children }: { children: React.ReactNode }) {
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [categories, setCategories] = useState<Category[] | null>(null);
 
@@ -50,7 +52,13 @@ export function QuickAddTrigger({ children }: { children: React.ReactNode }) {
             </div>
           </div>
         ) : (
-          <TransactionForm categories={categories} onSuccess={() => setOpen(false)} />
+          <TransactionForm
+            categories={categories}
+            onSuccess={() => {
+              setOpen(false);
+              router.refresh();
+            }}
+          />
         )}
       </DialogContent>
     </Dialog>
